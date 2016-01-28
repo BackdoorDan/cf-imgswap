@@ -6,11 +6,17 @@
 </head>
 <body>
    <div id="qunit"></div>
-   <div id="qunit-fixture"></div>
+   <div id="qunit-fixture">
+     <img src="img/cs-halo.jpg" class="cf-responsive">
+     <div class="cf-responsive" style="background-image: url('img/cs-halo.jpg')">
+     <img src="img/cs-halo.jpg" class="cf-responsive">
+     <div class="cf-responsive" style="background-image: url('img/cs-halo.jpg')">
+   </div>
    
    
    <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
-   <script src="../dist/cf-base.js"></script>
+   <script src="../node_modules/cf-base/dist/cf-base.js"></script>
+   <script src="../dist/cf-imgswap.js"></script>
    <script src="tests.js"></script>
    <script>
 

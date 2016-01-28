@@ -22,9 +22,7 @@ gulp.task("watch", function () {
     gulp.watch([
         "es6/**/*.js",
         "**/*.html",
-    ], function (event) {
-        livereload.changed(event);
-    });
+    ], ['js']);
 
 });
 
