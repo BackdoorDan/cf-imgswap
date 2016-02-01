@@ -21,7 +21,7 @@ cubicflow.extend('imgSwap', function (opts) {
     mediumSuffix: '-med',
     addMediumSuffix: true,
     largeSuffix: '-large',
-    addlargeSuffix: true,
+    addLargeSuffix: true,
     addRetinaSuffix: true,
     retinaSuffix: '@2x'
   };
@@ -128,6 +128,8 @@ cubicflow.extend('imgSwap', function (opts) {
 
         var newSrc = '';
         var retinaSuffix = opts.addRetinaSuffix ? opts.retinaSuffix : '';
+        var mediumSuffix = opts.addMediumSuffix ? opts.mediumSuffix : '';
+        var largeSuffix = opts.addLargeSuffix ? opts.largeSuffix : '';
 
         // SMALL AND NOT 2X
         if (cf.isSmallBrowser() && !cf.isRetina()) {
@@ -136,12 +138,12 @@ cubicflow.extend('imgSwap', function (opts) {
 
         // MEDIUM BROWSERS AND NOT 2X
         else if (cf.isMediumBrowser() && !cf.isRetina()) {
-            newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + '.' + this.extension;
+            newSrc = this.parentFolder + '/' + this.filename + mediumSuffix + '.' + this.extension;
           }
 
           // LARGE AND NOT 2x
           else if (cf.isLargeBrowser() && !cf.isRetina()) {
-              newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + '.' + this.extension;
+              newSrc = this.parentFolder + '/' + this.filename + largeSuffix + '.' + this.extension;
             }
 
             // SMALL AND 2X
@@ -150,11 +152,11 @@ cubicflow.extend('imgSwap', function (opts) {
               }
               // MEDIUM BROWSERS AND 2X
               else if (cf.isMediumBrowser() && cf.isRetina()) {
-                  newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + retinaSuffix + '.' + this.extension;
+                  newSrc = this.parentFolder + '/' + this.filename + mediumSuffix + retinaSuffix + '.' + this.extension;
                 }
                 // LARGE BROWSER AND IS X2
                 else if (cf.isLargeBrowser() && cf.isRetina()) {
-                    newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + retinaSuffix + '.' + this.extension;
+                    newSrc = this.parentFolder + '/' + this.filename + largeSuffix + retinaSuffix + '.' + this.extension;
                   }
 
         return newSrc;
