@@ -79,11 +79,12 @@ cubicflow.extend('imgSwap', function(opts){
     
     constructor(img){
       const re = /([\w\d_-]*)\.?[^\\\/]*$/i;
+      const bgImgRe = /(?:\(['|"]?)(.*?)(?:['|"]?\))/;
       const compStyle = img.currentStyle || window.getComputedStyle(img, false);
 
       this.elem = img;
       this.type = (img.nodeName === 'IMG') ? 'img' : 'div';
-      this.src = img.src || compStyle.backgroundImage.slice(5, -2);
+      this.src = img.src || bgImgRe.exec(compStyle.backgroundImage)[1];
       this.filename = this.src.match(re)[1];
       this.extension = this.src.split('.').pop();
       this.parentFolder =  this.src.substr(0, this.src.lastIndexOf('/'));
@@ -99,7 +100,7 @@ cubicflow.extend('imgSwap', function(opts){
       if(this.type === 'img'){
         this.elem.src = newSrc
       }else if (this.type === 'div'){
-        this.elem.style.backgroundImage = 'url(\'' + newSrc + '\')';
+        this.elem.style.backgroundImage = 'url(\"' + newSrc + '\")';
       }
       this.currentSrc = newSrc;
 
