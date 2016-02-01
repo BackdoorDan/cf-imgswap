@@ -1,26 +1,83 @@
-if(module.exports){
-  var cubicflow = require('cf-base');
+if(typeof exports == 'object'){
+  let cubicflow = require('cf-base');
 }
 
-cubicflow.extend('imgswap', function(options){
+cubicflow.extend('imgSwap', function(opts){
 
-  var cf = this;
+  let cf = this;
   
-  const defaultOptions = {
+  let defaultOpts = {
     responsiveClass: '.cf-responsive',
-    retinaSuffix: '@2x',
     mediumSuffix: '-med',
+    addMediumSuffix: true,
     largeSuffix: '-large',
+    addlargeSuffix: true,
     addRetinaSuffix: true,
+    retinaSuffix: '@2x'
   };
   
-  options = options || defaultOptions;
+  opts = Object.assign({}, defaultOpts, opts);
   
-  
+  const ImgList = class {
+      
+    constructor (opts){
+      
+      this.responsiveImages = [];
+      
+      this.opts = opts;
+      
+      let images = document.querySelectorAll(this.opts.responsiveClass);
+      
+
+      for (let i=0;i<images.length;i++){
+        const image = new ResponsiveImg(images[i])
+        this.responsiveImages.push(image);
+      }
+      
+      this.swapImgs(this.responsiveImages);
+      
+      window.addEventListener('resize', () => {
+        window.requestAnimationFrame( () => {
+          this.swapImgs(this.responsiveImages);
+        });
+      });
+      
+    }
+    
+    swapImgs (){
+      for(let i in this.responsiveImages){
+        this.responsiveImages[i].swapSrc();
+      }
+    };
+    
+    reflow (){
+      
+      let images = document.querySelectorAll(this.opts.responsiveClass);
+      
+      for (let i=0;i<images.length;i++){
+        if(this.imageIsAlreadyInArray(images[i]) === false){
+          this.responsiveImages.push(new ResponsiveImg(images[i]));
+        }
+      }
+      
+      this.swapImgs();
+      
+      return this;
+    }
+    
+    imageIsAlreadyInArray (image){
+      let newImage = this.responsiveImages.filter(function(item, index, array){
+        return item.elem == image;
+      });
+      
+      return newImage.length > 0;
+    }
+    
+  };
   
   const ResponsiveImg = class {
+    
     constructor(img){
-      
       const re = /([\w\d_-]*)\.?[^\\\/]*$/i;
       const compStyle = img.currentStyle || window.getComputedStyle(img, false);
 
@@ -30,17 +87,28 @@ cubicflow.extend('imgswap', function(options){
       this.filename = this.src.match(re)[1];
       this.extension = this.src.split('.').pop();
       this.parentFolder =  this.src.substr(0, this.src.lastIndexOf('/'));
-      
+      this.currentSrc = this.src;
     }
 
-    swap(){
+    swapSrc(){
+      
+      const newSrc = this.getNewSrc();
+      
+      if(newSrc === this.currentSrc) return;
+      
+      if(this.type === 'img'){
+        this.elem.src = newSrc
+      }else if (this.type === 'div'){
+        this.elem.style.backgroundImage = 'url(\'' + newSrc + '\')';
+      }
+      this.currentSrc = newSrc;
 
     }
 
     getNewSrc(){
       
       let newSrc = '';
-      let retinaSuffix = (options.addRetinaSuffix) ? options.retinaSuffix : '';
+      let retinaSuffix = (opts.addRetinaSuffix) ? opts.retinaSuffix : '';
 
       // SMALL AND NOT 2X
       if (cf.isSmallBrowser() && !cf.isRetina()){
@@ -49,54 +117,33 @@ cubicflow.extend('imgswap', function(options){
 
       // MEDIUM BROWSERS AND NOT 2X
       else if (cf.isMediumBrowser() && !cf.isRetina()){
-        newSrc = this.parentFolder + '/' + this.filename + options.mediumSuffix + '.' + this.extension;
+        newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + '.' + this.extension;
       }
 
       // LARGE AND NOT 2x
       else if (cf.isLargeBrowser() && !cf.isRetina()){
-        newSrc = this.parentFolder + '/' + this.filename + options.largeSuffix + '.' + this.extension;
+        newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + '.' + this.extension;
       }
       
       // SMALL AND 2X
       else if (cf.isSmallBrowser() && cf.isRetina()){
-        newSrc = asset.parentFolder + '/' + asset.filename + retinaSuffix + '.' + asset.extension;
+        newSrc = this.parentFolder + '/' + this.filename + retinaSuffix + '.' + this.extension;
       }
       // MEDIUM BROWSERS AND 2X
       else if (cf.isMediumBrowser() && cf.isRetina()){
-        newSrc = asset.parentFolder + '/' + asset.filename + mediumSuffix + retinaSuffix + '.' + asset.extension;
+        newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + retinaSuffix + '.' + this.extension;
       }
       // LARGE BROWSER AND IS X2
       else if (cf.isLargeBrowser() && cf.isRetina()){
-        newSrc = asset.parentFolder + '/' + asset.filename + largeSuffix + retinaSuffix + '.' + asset.extension;
+        newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + retinaSuffix + '.' + this.extension;
       }
 
 
       return newSrc;
     }
-  }
-  
-  const _getImagesArray = function(){
     
-    let responsiveImages = [];
-    let images = document.querySelectorAll(options.responsiveClass);
+  };
       
-    for (var i=0;i<images.length;i++){
-      let image = new ResponsiveImg(images[i])
-      responsiveImages.push(image);
-    }
-    
-    return responsiveImages;
-    
-  };
-  
-  const _init = function(options){
-
-    let allResponsiveImages = _getImagesArray();
-    
-    return allResponsiveImages;
-
-  };
-  
-  return _init(options);
+  return new ImgList(opts);
   
 });

@@ -3,19 +3,20 @@
   "version": "0.0.1",
   "description": "Automatically swap out images based on browser size and resolution",
   "devDependencies": {
+    "babel-plugin-transform-object-assign": "^6.3.13",
     "babel-preset-es2015": "^6.0.15",
     "eslint": "^1.10.1",
     "eslint-config-eslint": "^1.0.1",
     "gulp": "^3.9.0",
+    "gulp-babel": "^6.1.1",
     "gulp-livereload": "^3.8.1",
     "gulp-util": "^3.0.7",
     "node-qunit-phantomjs": "^1.3.0",
-    "qunitjs": "^1.20.0",
-    "gulp-babel": "^6.1.1"
+    "qunitjs": "^1.20.0"
   },
   "main": "dist/cf-imgswap.js",
   "dependencies": {
-    "cf-base": "0.0.3"
+    "cf-base": "0.0.5"
   },
   "scripts": {
     "start": "gulp",

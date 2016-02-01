@@ -8,7 +8,8 @@ gulp.task('js', function(){
    
    return gulp.src('es6/cf-imgswap.js')
    .pipe(babel({
-      presets: ['es2015']
+      presets: ['es2015'],
+      plugins: ["transform-object-assign"]
    }))
    .pipe(gulp.dest('dist'));
 
@@ -28,7 +29,9 @@ gulp.task("watch", function () {
 
 
 gulp.task('test', function(){
-   qunit('./test/test.html', {verbose: true});
+   qunit('./test/test.html', {
+     verbose: true
+   });
 });
 
 gulp.task("default", ["js", "watch"]);

@@ -1,0 +1,36 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CF Helper Library Tests</title>
+</head>
+  <style>
+
+    body img {
+      width: 500px;
+      height: 312px;
+    }
+    body div {
+      width: 500px;
+      height: 312px;
+      background-size: cover;
+    }
+  </style>
+<body>
+
+     <img src="img/cs-halo.jpg" class="cf-responsive">
+     <div class="cf-responsive" style="background-image: url('img/cs-halo.jpg')"></div>
+     <img src="img/cs-halo.jpg" class="cf2-responsive">
+     <div class="cf2-responsive" style="background-image: url('img/cs-halo.jpg')"></div>
+
+   
+   <script src="../node_modules/cf-base/dist/cf-base.js"></script>
+   <script src="../dist/cf-imgswap.js"></script>
+   <script>
+    
+     cf = cubicflow.init();
+     cf.imgSwap({});
+     cf.imgSwap({responsiveClass: '.cf2-responsive'});
+     
+   </script>
+</body>
+</html>

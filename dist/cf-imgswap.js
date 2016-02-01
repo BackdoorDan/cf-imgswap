@@ -2,25 +2,94 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-if (module.exports) {
-  var cubicflow = require('cf-base');
+if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) == 'object') {
+  var _cubicflow = require('cf-base');
 }
 
-cubicflow.extend('imgswap', function (options) {
+cubicflow.extend('imgSwap', function (opts) {
 
   var cf = this;
 
-  var defaultOptions = {
+  var defaultOpts = {
     responsiveClass: '.cf-responsive',
-    retinaSuffix: '@2x',
     mediumSuffix: '-med',
+    addMediumSuffix: true,
     largeSuffix: '-large',
-    addRetinaSuffix: true
+    addlargeSuffix: true,
+    addRetinaSuffix: true,
+    retinaSuffix: '@2x'
   };
 
-  options = options || defaultOptions;
+  opts = _extends({}, defaultOpts, opts);
+
+  var ImgList = function () {
+    function ImgList(opts) {
+      var _this = this;
+
+      _classCallCheck(this, ImgList);
+
+      this.responsiveImages = [];
+
+      this.opts = opts;
+
+      var images = document.querySelectorAll(this.opts.responsiveClass);
+
+      for (var i = 0; i < images.length; i++) {
+        var image = new ResponsiveImg(images[i]);
+        this.responsiveImages.push(image);
+      }
+
+      this.swapImgs(this.responsiveImages);
+
+      window.addEventListener('resize', function () {
+        window.requestAnimationFrame(function () {
+          _this.swapImgs(_this.responsiveImages);
+        });
+      });
+    }
+
+    _createClass(ImgList, [{
+      key: 'swapImgs',
+      value: function swapImgs() {
+        for (var i in this.responsiveImages) {
+          this.responsiveImages[i].swapSrc();
+        }
+      }
+    }, {
+      key: 'reflow',
+      value: function reflow() {
+
+        var images = document.querySelectorAll(this.opts.responsiveClass);
+
+        for (var i = 0; i < images.length; i++) {
+          if (this.imageIsAlreadyInArray(images[i]) === false) {
+            this.responsiveImages.push(new ResponsiveImg(images[i]));
+          }
+        }
+
+        this.swapImgs();
+
+        return this;
+      }
+    }, {
+      key: 'imageIsAlreadyInArray',
+      value: function imageIsAlreadyInArray(image) {
+        var newImage = this.responsiveImages.filter(function (item, index, array) {
+          return item.elem == image;
+        });
+
+        return newImage.length > 0;
+      }
+    }]);
+
+    return ImgList;
+  }();
 
   var ResponsiveImg = function () {
     function ResponsiveImg(img) {
@@ -35,17 +104,30 @@ cubicflow.extend('imgswap', function (options) {
       this.filename = this.src.match(re)[1];
       this.extension = this.src.split('.').pop();
       this.parentFolder = this.src.substr(0, this.src.lastIndexOf('/'));
+      this.currentSrc = this.src;
     }
 
     _createClass(ResponsiveImg, [{
-      key: 'swap',
-      value: function swap() {}
+      key: 'swapSrc',
+      value: function swapSrc() {
+
+        var newSrc = this.getNewSrc();
+
+        if (newSrc === this.currentSrc) return;
+
+        if (this.type === 'img') {
+          this.elem.src = newSrc;
+        } else if (this.type === 'div') {
+          this.elem.style.backgroundImage = 'url(\'' + newSrc + '\')';
+        }
+        this.currentSrc = newSrc;
+      }
     }, {
       key: 'getNewSrc',
       value: function getNewSrc() {
 
         var newSrc = '';
-        var retinaSuffix = options.addRetinaSuffix ? options.retinaSuffix : '';
+        var retinaSuffix = opts.addRetinaSuffix ? opts.retinaSuffix : '';
 
         // SMALL AND NOT 2X
         if (cf.isSmallBrowser() && !cf.isRetina()) {
@@ -54,25 +136,25 @@ cubicflow.extend('imgswap', function (options) {
 
         // MEDIUM BROWSERS AND NOT 2X
         else if (cf.isMediumBrowser() && !cf.isRetina()) {
-            newSrc = this.parentFolder + '/' + this.filename + options.mediumSuffix + '.' + this.extension;
+            newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + '.' + this.extension;
           }
 
           // LARGE AND NOT 2x
           else if (cf.isLargeBrowser() && !cf.isRetina()) {
-              newSrc = this.parentFolder + '/' + this.filename + options.largeSuffix + '.' + this.extension;
+              newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + '.' + this.extension;
             }
 
             // SMALL AND 2X
             else if (cf.isSmallBrowser() && cf.isRetina()) {
-                newSrc = asset.parentFolder + '/' + asset.filename + retinaSuffix + '.' + asset.extension;
+                newSrc = this.parentFolder + '/' + this.filename + retinaSuffix + '.' + this.extension;
               }
               // MEDIUM BROWSERS AND 2X
               else if (cf.isMediumBrowser() && cf.isRetina()) {
-                  newSrc = asset.parentFolder + '/' + asset.filename + mediumSuffix + retinaSuffix + '.' + asset.extension;
+                  newSrc = this.parentFolder + '/' + this.filename + opts.mediumSuffix + retinaSuffix + '.' + this.extension;
                 }
                 // LARGE BROWSER AND IS X2
                 else if (cf.isLargeBrowser() && cf.isRetina()) {
-                    newSrc = asset.parentFolder + '/' + asset.filename + largeSuffix + retinaSuffix + '.' + asset.extension;
+                    newSrc = this.parentFolder + '/' + this.filename + opts.largeSuffix + retinaSuffix + '.' + this.extension;
                   }
 
         return newSrc;
@@ -82,25 +164,5 @@ cubicflow.extend('imgswap', function (options) {
     return ResponsiveImg;
   }();
 
-  var _getImagesArray = function _getImagesArray() {
-
-    var responsiveImages = [];
-    var images = document.querySelectorAll(options.responsiveClass);
-
-    for (var i = 0; i < images.length; i++) {
-      var image = new ResponsiveImg(images[i]);
-      responsiveImages.push(image);
-    }
-
-    return responsiveImages;
-  };
-
-  var _init = function _init(options) {
-
-    var allResponsiveImages = _getImagesArray();
-
-    return allResponsiveImages;
-  };
-
-  return _init(options);
+  return new ImgList(opts);
 });
