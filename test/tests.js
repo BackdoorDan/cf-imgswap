@@ -1,16 +1,21 @@
 var loc = window.location.href.slice(0, -9);
 
-var testImgName = 'cs-halo';
+var testImgName = 'test';
 var testImgExtension = 'jpg';
-var testImg = 'img/cs-halo.jpg';
+var testImg = 'test.jpg';
 
-var mockWindow = function(width, height){
+var mockWindow = function(width, height, retina, cf){
   
   var width = width || 600;
   var height = height || 600;
   
   window.innerWidth = width;
   window.innerHeight = height;
+  
+  if(cf){
+    cf.isRetina = function(){return retina};
+  }
+  
 }
 
 
@@ -44,7 +49,6 @@ QUnit.test( 'ImgList class', function(assert){
 
 QUnit.test( 'ResponsiveImage class', function(assert){
   
-
   var cf = cubicflow.init();
   var imgList = cf.imgSwap();  
   var responsiveImage = imgList.responsiveImages[0];
@@ -66,94 +70,134 @@ QUnit.test( 'ResponsiveImage class', function(assert){
   
 });
 
-
-
-QUnit.test( 'Small breakpoint w/ no options', function(assert){
-  
-
-  var cf = cubicflow.init();
-  cf.isRetina = function(){return false};
-  mockWindow(500, 500);
-  var images = document.querySelectorAll('.cf-responsive');
-  
-  equal(images[0].src, loc + 'img/cs-halo.jpg', 'image src is correct on init');
-  
-  cf.imgSwap();
-  
-  equal(images[0].src, loc + 'img/cs-halo.jpg', 'img src is same');
-  
-});
-
-
-QUnit.test( 'medium breakpoint w/ no options', function(assert){
+QUnit.test( 'test imgList.reflow', function(assert){
   
   var cf = cubicflow.init();
+  mockWindow(500, 500, false, cf);
+  
   var images = document.querySelectorAll('.cf-responsive');
-  cf.isRetina = function(){ return false; };
-  mockWindow(700);
   
-  equal(images[0].src, loc + 'img/cs-halo.jpg', 'image src is correct on init');
+  var responsiveImages = cf.imgSwap();
   
-  cf.imgSwap();
+  equal(images[0].src, loc + 'img/cs-halo.jpg', 'img src is correct on small w/ no retina');
   
-  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'image src is correct on init');
+  responsiveImages.reflow();
   
-});
-
-
-QUnit.test( 'large breakpoint w/ no options', function(assert){
-  
-  var cf = cubicflow.init();
-  var images = document.querySelectorAll('.cf-responsive');
-  cf.isRetina = function(){ return false; };
-  mockWindow(1200);
-  
-  equal(images[0].src, loc + 'img/cs-halo.jpg', 'image src is correct on init');
-  
-  cf.imgSwap();
-  
-  equal(images[0].src, loc + 'img/cs-halo-large.jpg', 'image src is correct on init');
-  
-});
-
-
-QUnit.test( 'Call cf.imgswap twice', function(assert){
-  
-  var cf = cubicflow.init();
-  var images = document.querySelectorAll('.cf-responsive');
-  cf.isRetina = function(){return false};
-  mockWindow(700, 700);
-  
-  equal(images[0].src, loc + 'img/cs-halo.jpg', 'image src is correct on init');
-  
-  cf.imgSwap();
-  cf.imgSwap({responsiveClass: '.cf2-responsive'});
-  
-  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'img src is same');
-  
-});
-
-
-QUnit.test( 'test reflow', function(assert){
-  var cf = cubicflow.init();
-  var images = document.querySelectorAll('.cf-responsive');
-  cf.isRetina = function(){return false};
-  mockWindow(700, 700);
-  
-  var testImages = cf.imgSwap();
-  
-  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'img src is correct on med w/ no retina');
-  
-  testImages.reflow();
-  
-  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'existing imgs stay the same after reflow');
+  equal(images[0].src, loc + 'img/cs-halo.jpg', 'existing imgs stay the same after reflow');
   
   var fixture = document.querySelector('#qunit-fixture');
   var newImgHTML = '<img src="img/cs-halo.jpg" class="cf-responsive">';
   fixture.insertAdjacentHTML('beforeend', newImgHTML);
   
-  ok(testImages.reflow().responsiveImages.length == 3, 'New image was added to array');
+  ok(responsiveImages.reflow().responsiveImages.length == 3, 'New image was added to responsiveImages array');
   images = document.querySelectorAll('.cf-responsive');
-  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'existing imgs stay the same after reflow');
+  
+  equal(images[0].src, loc + 'img/cs-halo.jpg', 'existing imgs stay the same after reflow');
 
 });
+
+
+QUnit.test( 'test imgSwap with defaults', function(assert){
+  
+  var cf = cubicflow.init();
+  var responsiveImages = cf.imgSwap();
+  var images = document.querySelectorAll('.cf-responsive');
+  
+  
+  // SMALL BROWSER WITHOUT RETINA
+  mockWindow(500, 500, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo.jpg', 'img src is correct on small w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo.jpg\")', 'bgImg src is correct on small w/ no retina');
+  
+  // SMALL BROWSER WITH RETINA
+  mockWindow(500, 500, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo@2x.jpg', 'img src is correct on small @2x');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo@2x.jpg\")', 'bgImg src is correct on small @2x');
+  
+  // MEDIUM BROWSER WITHOUT RETINA
+  mockWindow(700, 700, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'img src is correct on medium w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-med.jpg\")', 'bgImg src is correct on medium w/ no retina');
+  
+  // MEDIUM BROWSER WITH RETINA
+  mockWindow(700, 700, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-med@2x.jpg', 'img src is correct on medium @2x');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-med@2x.jpg\")', 'bgImg src is correct on medium @2x');
+  
+  // LARGE BROWSER WITHOUT RETINA
+  mockWindow(1100, 1100, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-large.jpg', 'img src is correct on large w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-large.jpg\")', 'bgImg src is correct on large w/ no retina');
+  
+  // LARGE BROWSER WITHOUT RETINA
+  mockWindow(1100, 1100, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-large@2x.jpg', 'img src is correct on large w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-large@2x.jpg\")', 'bgImg src is correct on large w/ no retina');
+  
+});
+
+
+QUnit.test( 'test imgSwap with options', function(assert){
+  
+  var options = {
+    responsiveClass: '.cf2-responsive',
+    mediumSuffix: '-m',
+    addMediumSuffix: true,
+    largeSuffix: '-l',
+    addlargeSuffix: true,
+    addRetinaSuffix: true,
+    retinaSuffix: '-x2'
+  };
+  
+  var cf = cubicflow.init();
+  var responsiveImages = cf.imgSwap(options);
+  var images = document.querySelectorAll('.cf2-responsive');
+  
+  
+  // SMALL BROWSER WITHOUT RETINA
+  mockWindow(500, 500, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo.jpg', 'img src is correct on small w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo.jpg\")', 'bgImg src is correct on small w/ no retina');
+  
+  // SMALL BROWSER WITH RETINA
+  mockWindow(500, 500, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo@2x.jpg', 'img src is correct on small @2x');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo@2x.jpg\")', 'bgImg src is correct on small @2x');
+  
+  // MEDIUM BROWSER WITHOUT RETINA
+  mockWindow(700, 700, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-med.jpg', 'img src is correct on medium w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-med.jpg\")', 'bgImg src is correct on medium w/ no retina');
+  
+  // MEDIUM BROWSER WITH RETINA
+  mockWindow(700, 700, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-med@2x.jpg', 'img src is correct on medium @2x');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-med@2x.jpg\")', 'bgImg src is correct on medium @2x');
+  
+  // LARGE BROWSER WITHOUT RETINA
+  mockWindow(1100, 1100, false, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-large.jpg', 'img src is correct on large w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-large.jpg\")', 'bgImg src is correct on large w/ no retina');
+  
+  // LARGE BROWSER WITHOUT RETINA
+  mockWindow(1100, 1100, true, cf);
+  responsiveImages.reflow();
+  equal(images[0].src, loc + 'img/cs-halo-large@2x.jpg', 'img src is correct on large w/ no retina');
+  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/cs-halo-large@2x.jpg\")', 'bgImg src is correct on large w/ no retina');
+  
+});
+
+
+
+
