@@ -1,7 +1,3 @@
-if(typeof exports == 'object'){
-  let cubicflow = require('cf-base');
-}
-
 cubicflow.extend('imgSwap', function(opts){
 
   let cf = this;
@@ -100,7 +96,7 @@ cubicflow.extend('imgSwap', function(opts){
       if(this.type === 'img'){
         this.elem.src = newSrc
       }else if (this.type === 'div'){
-        this.elem.style.backgroundImage = 'url(\"' + newSrc + '\")';
+        this.elem.style.backgroundImage = 'url(' + newSrc + ')';
       }
       this.currentSrc = newSrc;
 

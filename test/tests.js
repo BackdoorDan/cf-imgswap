@@ -4,6 +4,8 @@ var testImgName = 'test';
 var testImgExtension = 'jpg';
 var testImg = 'img/test.jpg';
 
+var bgImgRe = /(?:\(['|"]?)(.*?)(?:['|"]?\))/;
+
 var mockWindow = function(width, height, retina, cf){
   
   var width = width || 600;
@@ -17,6 +19,11 @@ var mockWindow = function(width, height, retina, cf){
   }
   
 }
+
+var getSrc = function(bgAttr){
+  const bgImgRe = /(?:\(['|"]?)(.*?)(?:['|"]?\))/;
+  return bgImgRe.exec(bgAttr)[1];
+};
 
 
 QUnit.test( 'cubicflow.extend', function(assert){
@@ -103,42 +110,42 @@ QUnit.test( 'test imgSwap with defaults', function(assert){
   var responsiveImages = cf.imgSwap();
   var images = document.querySelectorAll('.cf-responsive');
   
-  
   // SMALL BROWSER WITHOUT RETINA
   mockWindow(500, 500, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on small w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test.jpg\")', 'bgImg src is correct on small w/ no retina');
+  
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on small w/ no retina');
   
   // SMALL BROWSER WITH RETINA
   mockWindow(500, 500, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test@2x.jpg', 'img src is correct on small @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test@2x.jpg\")', 'bgImg src is correct on small @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test@2x.jpg', 'bgImg src is correct on small @2x');
   
   // MEDIUM BROWSER WITHOUT RETINA
   mockWindow(700, 700, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-med.jpg', 'img src is correct on medium w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-med.jpg\")', 'bgImg src is correct on medium w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-med.jpg', 'bgImg src is correct on medium w/ no retina');
   
   // MEDIUM BROWSER WITH RETINA
   mockWindow(700, 700, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-med@2x.jpg', 'img src is correct on medium @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-med@2x.jpg\")', 'bgImg src is correct on medium @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-med@2x.jpg', 'bgImg src is correct on medium @2x');
   
   // LARGE BROWSER WITHOUT RETINA
   mockWindow(1100, 1100, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-large.jpg', 'img src is correct on large w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-large.jpg\")', 'bgImg src is correct on large w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-large.jpg', 'bgImg src is correct on large w/ no retina');
   
   // LARGE BROWSER WITH RETINA
   mockWindow(1100, 1100, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-large@2x.jpg', 'img src is correct on large @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-large@2x.jpg\")', 'bgImg src is correct on large @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-large@2x.jpg', 'bgImg src is correct on large @2x');
   
 });
 
@@ -164,37 +171,37 @@ QUnit.test( 'test imgSwap with options', function(assert){
   mockWindow(500, 500, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on small w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test.jpg\")', 'bgImg src is correct on small w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on small w/ no retina');
   
   // SMALL BROWSER WITH RETINA
   mockWindow(500, 500, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-x2.jpg', 'img src is correct on small @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-x2.jpg\")', 'bgImg src is correct on small @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-x2.jpg', 'bgImg src is correct on small @2x');
   
   // MEDIUM BROWSER WITHOUT RETINA
   mockWindow(700, 700, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-m.jpg', 'img src is correct on medium w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-m.jpg\")', 'bgImg src is correct on medium w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-m.jpg', 'bgImg src is correct on medium w/ no retina');
   
   // MEDIUM BROWSER WITH RETINA
   mockWindow(700, 700, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-m-x2.jpg', 'img src is correct on medium @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-m-x2.jpg\")', 'bgImg src is correct on medium @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-m-x2.jpg', 'bgImg src is correct on medium @2x');
   
   // LARGE BROWSER WITHOUT RETINA
   mockWindow(1100, 1100, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-l.jpg', 'img src is correct on large w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-l.jpg\")', 'bgImg src is correct on large w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-l.jpg', 'bgImg src is correct on large w/ no retina');
   
   // LARGE BROWSER WITh RETINA
   mockWindow(1100, 1100, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test-l-x2.jpg', 'img src is correct on large @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test-l-x2.jpg\")', 'bgImg src is correct on large @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test-l-x2.jpg', 'bgImg src is correct on large @2x');
   
 });
 
@@ -217,37 +224,37 @@ QUnit.test( 'test imgSwap only @2x', function(assert){
   mockWindow(500, 500, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on small w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test.jpg\")', 'bgImg src is correct on small w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on small w/ no retina');
   
   // SMALL BROWSER WITH RETINA
   mockWindow(500, 500, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test@2x.jpg', 'img src is correct on small @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test@2x.jpg\")', 'bgImg src is correct on small @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test@2x.jpg', 'bgImg src is correct on small @2x');
   
   // MEDIUM BROWSER WITHOUT RETINA
   mockWindow(700, 700, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on medium w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test.jpg\")', 'bgImg src is correct on medium w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on medium w/ no retina');
   
   // MEDIUM BROWSER WITH RETINA
   mockWindow(700, 700, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test@2x.jpg', 'img src is correct on medium @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test@2x.jpg\")', 'bgImg src is correct on medium @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test@2x.jpg', 'bgImg src is correct on medium @2x');
   
   // LARGE BROWSER WITHOUT RETINA
   mockWindow(1100, 1100, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on large w/ no retina');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test.jpg\")', 'bgImg src is correct on large w/ no retina');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on large w/ no retina');
   
   // LARGE BROWSER WITH RETINA
   mockWindow(1100, 1100, true, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test@2x.jpg', 'img src is correct on large @2x');
-  equal(images[1].style.backgroundImage, 'url(\"' + loc + 'img/test@2x.jpg\")', 'bgImg src is correct on large @2x');
+  equal(getSrc(images[1].style.backgroundImage), loc + 'img/test@2x.jpg', 'bgImg src is correct on large @2x');
   
 });
 

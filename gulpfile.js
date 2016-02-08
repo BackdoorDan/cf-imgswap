@@ -6,7 +6,7 @@ var qunit = require('node-qunit-phantomjs');
 
 gulp.task('js', function(){
    
-   return gulp.src('es6/cf-imgswap.js')
+   return gulp.src(['es6/cf-imgswap.js'])
    .pipe(babel({
       presets: ['es2015'],
       plugins: ["transform-object-assign"]

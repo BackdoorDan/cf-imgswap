@@ -4,13 +4,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) == 'object') {
-  var _cubicflow = require('cf-base');
-}
 
 cubicflow.extend('imgSwap', function (opts) {
 
@@ -119,7 +113,7 @@ cubicflow.extend('imgSwap', function (opts) {
         if (this.type === 'img') {
           this.elem.src = newSrc;
         } else if (this.type === 'div') {
-          this.elem.style.backgroundImage = 'url(\"' + newSrc + '\")';
+          this.elem.style.backgroundImage = 'url(' + newSrc + ')';
         }
         this.currentSrc = newSrc;
       }
