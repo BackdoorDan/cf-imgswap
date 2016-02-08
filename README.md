@@ -4,21 +4,19 @@ Automatically change image or background-image src based on breakpoints and @2x 
 
 ## Installation
 
-Include dist/cf-imgswap.js on your page and its dependency [cf-base](https://www.npmjs.com/package/cf-base)
+Include dist/cf-imgswap.js on your page.
 
 ```
-<script src="dist/cf-base.js"></script>
 <script src="dist/cf-imgswap.js"></script>
 ```
 or as a CommomJS Module
+```
+var cf = require(cf-imgswap);
+```
 
 ## Usage
 
-Initialize cf to set your breakpoints [See possible options for cf-base](https://www.npmjs.com/package/cf-base)
-```
-var cf = cubicflow.init();
-```
-Then run imgSwap
+Just run cf.imgSwap
 ```
 var responsiveImages = cf.imgSwap();
 ```
@@ -55,6 +53,9 @@ var defaultOpts = {
   addMediumSuffix: true,
   addLargeSuffix: true,
   addRetinaSuffix: true,
+  smallBrowserWidth: 600,
+  mediumBrowserWidth: 1025,
+  largeBrowserWidth: 1280
 };
 ```
 
