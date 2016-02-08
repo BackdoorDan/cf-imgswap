@@ -1,6 +1,6 @@
 # cf-imgSwap
 
-Automatically change image or background-image src based on breakpoints and @2x support.
+Automatically change path of images and background images based on breakpoints and retina support.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Include dist/cf-imgswap.js on your page.
 ```
 or as a CommomJS Module
 ```
-var cf = require(cf-imgswap);
+var cf = require('cf-imgswap');
 ```
 
 ## Usage

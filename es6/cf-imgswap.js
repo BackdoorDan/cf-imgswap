@@ -2,6 +2,8 @@ if (!cf){
   var cf = {};
 }
 
+// Helper functions for detecting viewport
+// Each returns a boolean
 cf.isRetina = (opts) => {
   if(!opts) {
     console.error('must pass options to detect breakpoint');
@@ -40,8 +42,10 @@ cf.isLargeBrowser = (opts) => {
 }
 
 
+// Main Method
 cf.imgSwap = (opts) => {
   
+  // Default Options
   let defaultOpts = {
     responsiveClass: '.cf-responsive',
     mediumSuffix: '-med',
@@ -55,8 +59,13 @@ cf.imgSwap = (opts) => {
     largeBrowserWidth: 1280
   };
   
+  // Merge default options with passed options. ( Needs es6 object.assign transform plugin )
   opts = Object.assign({}, defaultOpts, opts);
   
+  
+  // Main list class. Holds all the responsive images and provides methods to effect all of them
+  // Constructor takes a options object as param
+  // Gets instantiated and returned at the bottom of the file
   const ImgList = class {
       
     constructor (opts){
@@ -83,12 +92,24 @@ cf.imgSwap = (opts) => {
       
     }
     
+    // Swaps all images.
     swapImgs (){
       for(let i in this.responsiveImages){
         this.responsiveImages[i].swapSrc();
       }
     };
     
+    // Checkes to see if the image is new. Takes an image element as a param.
+    imageIsAlreadyInArray (image){
+      let newImage = this.responsiveImages.filter(function(item, index, array){
+        return item.elem == image;
+      });
+      
+      return newImage.length > 0;
+    }
+    
+    
+    // Checks for new images then swap.
     reflow (){
       
       let images = document.querySelectorAll(this.opts.responsiveClass);
@@ -104,21 +125,21 @@ cf.imgSwap = (opts) => {
       return this;
     }
     
-    imageIsAlreadyInArray (image){
-      let newImage = this.responsiveImages.filter(function(item, index, array){
-        return item.elem == image;
-      });
-      
-      return newImage.length > 0;
-    }
-    
   };
   
+  
+  // Class for each image. 
+  // Constructor takes a DOM Node as param
   const ResponsiveImg = class {
     
     constructor(img){
+      
+      // Regex for getting file name from URL
       const re = /([\w\d_-]*)\.?[^\\\/]*$/i;
+      
+      // Regex for getting file name from CSS bgimage
       const bgImgRe = /(?:\(['|"]?)(.*?)(?:['|"]?\))/;
+      
       const compStyle = img.currentStyle || window.getComputedStyle(img, false);
 
       this.elem = img;
@@ -130,6 +151,7 @@ cf.imgSwap = (opts) => {
       this.currentSrc = this.src;
     }
 
+    // Swap out the img src with new one.
     swapSrc(){
       
       const newSrc = this.getNewSrc();
@@ -145,6 +167,7 @@ cf.imgSwap = (opts) => {
 
     }
 
+    // Returns what the new source for the image should be.
     getNewSrc(){
       
       let newSrc = '';
@@ -185,12 +208,15 @@ cf.imgSwap = (opts) => {
     }
     
   };
-      
+  
+  
+  // Kick everything off by returning a new ImgList!
   return new ImgList(opts);
   
 };
 
 
+// Export CommonJS module
 if (typeof exports !== 'undefined') {
   if (typeof module !== 'undefined' && module.exports) {
     exports = module.exports = cf;
