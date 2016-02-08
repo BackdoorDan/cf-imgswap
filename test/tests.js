@@ -27,18 +27,14 @@ var getSrc = function(bgAttr){
 
 
 QUnit.test( 'cubicflow.extend', function(assert){
-  
-  var cf = cubicflow.init();
- 
+   
   ok(typeof cf.imgSwap === 'function', 'cf.imgswap is a function');
 
 });
 
+
 QUnit.test( 'ImgList class', function(assert){
   
-
-  var cf = cubicflow.init();
-
   var imgList = cf.imgSwap();
   ok(imgList.opts, 'imageList.Options are created');
   ok(imgList.responsiveImages, 'imageList.responsiveImages array is created');
@@ -56,7 +52,6 @@ QUnit.test( 'ImgList class', function(assert){
 
 QUnit.test( 'ResponsiveImage class', function(assert){
   
-  var cf = cubicflow.init();
   var imgList = cf.imgSwap();  
   var responsiveImage = imgList.responsiveImages[0];
   var responsiveBgImage = imgList.responsiveImages[1];
@@ -79,7 +74,6 @@ QUnit.test( 'ResponsiveImage class', function(assert){
 
 QUnit.test( 'test imgList.reflow', function(assert){
   
-  var cf = cubicflow.init();
   mockWindow(500, 500, false, cf);
   
   var images = document.querySelectorAll('.cf-responsive');
@@ -106,7 +100,7 @@ QUnit.test( 'test imgList.reflow', function(assert){
 
 QUnit.test( 'test imgSwap with defaults', function(assert){
   
-  var cf = cubicflow.init();
+  mockWindow(500, 500, true, cf);
   var responsiveImages = cf.imgSwap();
   var images = document.querySelectorAll('.cf-responsive');
   
@@ -114,7 +108,6 @@ QUnit.test( 'test imgSwap with defaults', function(assert){
   mockWindow(500, 500, false, cf);
   responsiveImages.reflow();
   equal(images[0].src, loc + 'img/test.jpg', 'img src is correct on small w/ no retina');
-  
   equal(getSrc(images[1].style.backgroundImage), loc + 'img/test.jpg', 'bgImg src is correct on small w/ no retina');
   
   // SMALL BROWSER WITH RETINA
@@ -162,7 +155,6 @@ QUnit.test( 'test imgSwap with options', function(assert){
     retinaSuffix: '-x2'
   };
   
-  var cf = cubicflow.init();
   var responsiveImages = cf.imgSwap(options);
   var images = document.querySelectorAll('.cf2-responsive');
   
@@ -215,7 +207,6 @@ QUnit.test( 'test imgSwap only @2x', function(assert){
     addRetinaSuffix: true,
   };
   
-  var cf = cubicflow.init();
   var responsiveImages = cf.imgSwap(options);
   var images = document.querySelectorAll('.cf-responsive');
   
@@ -257,8 +248,3 @@ QUnit.test( 'test imgSwap only @2x', function(assert){
   equal(getSrc(images[1].style.backgroundImage), loc + 'img/test@2x.jpg', 'bgImg src is correct on large @2x');
   
 });
-
-
-
-
-

@@ -1,6 +1,46 @@
-cubicflow.extend('imgSwap', function(opts){
+if (!cf){
+  var cf = {};
+}
 
-  let cf = this;
+cf.isRetina = (opts) => {
+  if(!opts) {
+    console.error('must pass options to detect breakpoint');
+    return undefined
+  }
+  if (window.matchMedia) {
+    var mq = window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+    return (mq && mq.matches || (window.devicePixelRatio > 1));
+  } else {
+    return false;
+  }
+}
+
+cf.isSmallBrowser = (opts) => {
+  if(!opts) {
+    console.error('must pass options to detect breakpoint');
+    return undefined
+  }
+  return window.innerWidth <= opts.smallBrowserWidth;
+}
+
+cf.isMediumBrowser = (opts) => {
+  if(!opts) {
+    console.error('must pass options to detect breakpoint');
+    return undefined
+  }
+  return window.innerWidth > opts.smallBrowserWidth && window.innerWidth <= opts.mediumBrowserWidth;
+};
+
+cf.isLargeBrowser = (opts) => {
+  if(!opts) {
+    console.error('must pass options to detect breakpoint');
+    return undefined
+  }
+  return window.innerWidth >= opts.mediumBrowserWidth;
+}
+
+
+cf.imgSwap = (opts) => {
   
   let defaultOpts = {
     responsiveClass: '.cf-responsive',
@@ -9,7 +49,10 @@ cubicflow.extend('imgSwap', function(opts){
     largeSuffix: '-large',
     addLargeSuffix: true,
     addRetinaSuffix: true,
-    retinaSuffix: '@2x'
+    retinaSuffix: '@2x',
+    smallBrowserWidth: 600,
+    mediumBrowserWidth: 1025,
+    largeBrowserWidth: 1280
   };
   
   opts = Object.assign({}, defaultOpts, opts);
@@ -110,30 +153,30 @@ cubicflow.extend('imgSwap', function(opts){
       let largeSuffix = (opts.addLargeSuffix) ? opts.largeSuffix : '';
 
       // SMALL AND NOT 2X
-      if (cf.isSmallBrowser() && !cf.isRetina()){
+      if (cf.isSmallBrowser(opts) && !cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + '.' + this.extension;
       }
 
       // MEDIUM BROWSERS AND NOT 2X
-      else if (cf.isMediumBrowser() && !cf.isRetina()){
+      else if (cf.isMediumBrowser(opts) && !cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + mediumSuffix + '.' + this.extension;
       }
 
       // LARGE AND NOT 2x
-      else if (cf.isLargeBrowser() && !cf.isRetina()){
+      else if (cf.isLargeBrowser(opts) && !cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + largeSuffix + '.' + this.extension;
       }
       
       // SMALL AND 2X
-      else if (cf.isSmallBrowser() && cf.isRetina()){
+      else if (cf.isSmallBrowser(opts) && cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + retinaSuffix + '.' + this.extension;
       }
       // MEDIUM BROWSERS AND 2X
-      else if (cf.isMediumBrowser() && cf.isRetina()){
+      else if (cf.isMediumBrowser(opts) && cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + mediumSuffix + retinaSuffix + '.' + this.extension;
       }
       // LARGE BROWSER AND IS X2
-      else if (cf.isLargeBrowser() && cf.isRetina()){
+      else if (cf.isLargeBrowser(opts) && cf.isRetina(opts)){
         newSrc = this.parentFolder + '/' + this.filename + largeSuffix + retinaSuffix + '.' + this.extension;
       }
 
@@ -145,4 +188,11 @@ cubicflow.extend('imgSwap', function(opts){
       
   return new ImgList(opts);
   
-});
+};
+
+
+if (typeof exports !== 'undefined') {
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = cf;
+  }
+}
